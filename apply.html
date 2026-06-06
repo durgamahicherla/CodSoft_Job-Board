@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Apply for Job – JobNest</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root { --primary:#0a0a0a; --accent:#f0e614; --accent2:#14f0a0; --surface:#141414; --surface2:#1e1e1e; --text:#f5f5f5; --muted:#888; --border:#2a2a2a; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--primary); color:var(--text); font-family:'DM Sans',sans-serif; }
+    h1,h2,h3 { font-family:'Syne',sans-serif; }
+    .navbar { background:rgba(10,10,10,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(10px); padding:1rem 0; position:sticky; top:0; z-index:999; }
+    .navbar-brand { font-family:'Syne',sans-serif; font-weight:800; font-size:1.5rem; color:var(--text)!important; letter-spacing:-1px; }
+    .navbar-brand span { color:var(--accent); }
+    .nav-link { color:var(--muted)!important; font-weight:500; transition:color 0.2s; }
+    .nav-link:hover { color:var(--accent)!important; }
+    .btn-accent { background:var(--accent); color:#000; font-weight:700; border:none; padding:0.7rem 2rem; border-radius:8px; font-family:'Syne',sans-serif; font-size:1rem; transition:transform 0.2s,box-shadow 0.2s; cursor:pointer; }
+    .btn-accent:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(240,230,20,0.3); }
+    .btn-outline-accent { border:1.5px solid var(--accent); color:var(--accent); background:transparent; padding:0.6rem 1.4rem; border-radius:8px; font-family:'Syne',sans-serif; font-weight:600; transition:all 0.2s; cursor:pointer; }
+    .btn-outline-accent:hover { background:var(--accent); color:#000; }
+
+    .card-dark { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:2rem; }
+    .form-label-dark { font-size:0.85rem; color:var(--muted); margin-bottom:0.4rem; display:block; font-weight:500; }
+    .form-control-dark { width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.7rem 1rem; border-radius:8px; outline:none; font-family:'DM Sans',sans-serif; transition:border-color 0.2s; margin-bottom:1.2rem; }
+    .form-control-dark:focus { border-color:var(--accent); }
+    .form-control-dark::placeholder { color:var(--muted); }
+    select.form-control-dark option { background:var(--surface2); }
+
+    /* STEPPER */
+    .stepper { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:2.5rem; }
+    .step { display:flex; flex-direction:column; align-items:center; position:relative; flex:1; }
+    .step-circle { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; z-index:1; transition:all 0.3s; }
+    .step-circle.done { background:var(--accent); color:#000; }
+    .step-circle.active { background:var(--accent); color:#000; box-shadow:0 0 0 4px rgba(240,230,20,0.2); }
+    .step-circle.pending { background:var(--surface2); color:var(--muted); border:1px solid var(--border); }
+    .step-label { font-size:0.72rem; color:var(--muted); margin-top:0.4rem; text-align:center; white-space:nowrap; }
+    .step-line { flex:1; height:1px; background:var(--border); margin-top:-18px; transition:background 0.3s; }
+    .step-line.done { background:var(--accent); }
+
+    /* FILE UPLOAD */
+    .file-drop { border:2px dashed var(--border); border-radius:10px; padding:2.5rem; text-align:center; cursor:pointer; transition:border-color 0.2s,background 0.2s; margin-bottom:1.2rem; }
+    .file-drop:hover,.file-drop.dragover { border-color:var(--accent); background:rgba(240,230,20,0.04); }
+    .file-drop i { font-size:2rem; color:var(--muted); display:block; margin-bottom:0.5rem; }
+    .file-drop p { color:var(--muted); font-size:0.9rem; margin:0; }
+    .file-drop .accent { color:var(--accent); font-weight:600; }
+    .file-name { background:rgba(240,230,20,0.08); border:1px solid rgba(240,230,20,0.2); border-radius:6px; padding:0.5rem 1rem; font-size:0.85rem; color:var(--accent); display:none; margin-bottom:1.2rem; }
+
+    /* SUCCESS */
+    .success-wrap { text-align:center; padding:3rem 1rem; display:none; }
+    .success-icon { width:80px; height:80px; background:rgba(20,240,160,0.1); border:2px solid var(--accent2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; margin:0 auto 1.5rem; }
+    .toast-msg { position:fixed; bottom:2rem; right:2rem; background:var(--accent); color:#000; padding:1rem 1.5rem; border-radius:8px; font-weight:700; font-family:'Syne',sans-serif; display:none; z-index:9999; }
+
+    footer { background:var(--primary); border-top:1px solid var(--border); padding:2rem 0; text-align:center; color:var(--muted); font-size:0.85rem; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">Job<span>Nest</span></a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
+        <li class="nav-item"><a class="nav-link" href="listings.html">Find Jobs</a></li>
+        <li class="nav-item ms-2"><a href="login.html" class="btn btn-outline-accent btn-sm">Login</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-5" style="max-width:720px;">
+
+  <a href="listings.html" style="color:var(--muted);text-decoration:none;font-size:0.9rem;display:inline-flex;align-items:center;gap:0.4rem;margin-bottom:2rem;">
+    <i class="bi bi-arrow-left"></i> Back to Jobs
+  </a>
+
+  <!-- Job Info Banner -->
+  <div id="jobBanner" class="card-dark mb-4 d-flex align-items-center gap-3">
+    <div style="font-size:2rem;" id="jobLogo">💼</div>
+    <div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;" id="jobTitleBanner">Loading...</div>
+      <div style="color:var(--muted);font-size:0.9rem;" id="jobCompanyBanner"></div>
+    </div>
+    <div class="ms-auto text-end">
+      <div style="color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;" id="jobSalaryBanner"></div>
+      <div style="color:var(--muted);font-size:0.8rem;" id="jobLocBanner"></div>
+    </div>
+  </div>
+
+  <!-- STEPPER -->
+  <div class="stepper">
+    <div class="step">
+      <div class="step-circle active" id="s1">1</div>
+      <div class="step-label">Personal Info</div>
+    </div>
+    <div class="step-line" id="line1"></div>
+    <div class="step">
+      <div class="step-circle pending" id="s2">2</div>
+      <div class="step-label">Resume</div>
+    </div>
+    <div class="step-line" id="line2"></div>
+    <div class="step">
+      <div class="step-circle pending" id="s3">3</div>
+      <div class="step-label">Cover Letter</div>
+    </div>
+    <div class="step-line" id="line3"></div>
+    <div class="step">
+      <div class="step-circle pending" id="s4">4</div>
+      <div class="step-label">Review</div>
+    </div>
+  </div>
+
+  <!-- FORM STEPS -->
+  <div class="card-dark">
+
+    <!-- STEP 1 -->
+    <div id="step1">
+      <h2 style="font-size:1.3rem;margin-bottom:0.3rem;">Personal Information</h2>
+      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem;">Tell us about yourself</p>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label-dark">First Name *</label>
+          <input type="text" class="form-control-dark" id="firstName" placeholder="John"/>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label-dark">Last Name *</label>
+          <input type="text" class="form-control-dark" id="lastName" placeholder="Doe"/>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label-dark">Email Address *</label>
+          <input type="email" class="form-control-dark" id="email" placeholder="john@example.com"/>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label-dark">Phone Number *</label>
+          <input type="tel" class="form-control-dark" id="phone" placeholder="+91 9876543210"/>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label-dark">Current Location</label>
+          <input type="text" class="form-control-dark" id="location" placeholder="Hyderabad, India"/>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label-dark">Years of Experience</label>
+          <select class="form-control-dark" id="experience">
+            <option value="">Select...</option>
+            <option>Fresher (0 yrs)</option>
+            <option>1–2 years</option>
+            <option>2–4 years</option>
+            <option>4–6 years</option>
+            <option>6+ years</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label-dark">LinkedIn Profile</label>
+          <input type="url" class="form-control-dark" id="linkedin" placeholder="https://linkedin.com/in/yourname"/>
+        </div>
+        <div class="col-12">
+          <label class="form-label-dark">Portfolio / GitHub (optional)</label>
+          <input type="url" class="form-control-dark" id="portfolio" placeholder="https://github.com/yourname"/>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end mt-2">
+        <button class="btn-accent" onclick="goStep(2)">Next: Upload Resume →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="step2" style="display:none;">
+      <h2 style="font-size:1.3rem;margin-bottom:0.3rem;">Upload Your Resume</h2>
+      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem;">PDF or Word format, max 5MB</p>
+
+      <div class="file-drop" id="fileDrop" onclick="document.getElementById('resumeFile').click()"
+        ondragover="event.preventDefault();this.classList.add('dragover')"
+        ondragleave="this.classList.remove('dragover')"
+        ondrop="handleDrop(event)">
+        <i class="bi bi-cloud-arrow-up"></i>
+        <p><span class="accent">Click to upload</span> or drag & drop your resume here</p>
+        <p style="font-size:0.8rem;margin-top:0.3rem;">PDF, DOC, DOCX (Max 5MB)</p>
+      </div>
+      <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" style="display:none;" onchange="handleFileSelect(this)"/>
+      <div class="file-name" id="fileName"><i class="bi bi-file-earmark-check me-2"></i><span id="fileNameText"></span></div>
+
+      <label class="form-label-dark">Current/Expected Salary (LPA)</label>
+      <input type="text" class="form-control-dark" id="salary" placeholder="e.g. 12 LPA"/>
+
+      <label class="form-label-dark">Notice Period</label>
+      <select class="form-control-dark" id="notice">
+        <option>Immediate</option>
+        <option>15 days</option>
+        <option>30 days</option>
+        <option>60 days</option>
+        <option>90 days</option>
+      </select>
+
+      <div class="d-flex justify-content-between mt-3">
+        <button class="btn-outline-accent" onclick="goStep(1)">← Back</button>
+        <button class="btn-accent" onclick="goStep(3)">Next: Cover Letter →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div id="step3" style="display:none;">
+      <h2 style="font-size:1.3rem;margin-bottom:0.3rem;">Cover Letter</h2>
+      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem;">Tell the employer why you're a great fit</p>
+
+      <label class="form-label-dark">Cover Letter *</label>
+      <textarea class="form-control-dark" id="coverLetter" rows="8" placeholder="Dear Hiring Manager,&#10;&#10;I am excited to apply for this position at your company...&#10;&#10;My skills and experience align perfectly with your requirements because...&#10;&#10;Thank you for your consideration."></textarea>
+
+      <div style="text-align:right;color:var(--muted);font-size:0.8rem;margin-top:-0.8rem;margin-bottom:1rem;"><span id="charCount">0</span>/1000 characters</div>
+
+      <label class="form-label-dark">How did you hear about this job?</label>
+      <select class="form-control-dark" id="source">
+        <option>JobNest Website</option>
+        <option>LinkedIn</option>
+        <option>Friend / Referral</option>
+        <option>Google</option>
+        <option>Other</option>
+      </select>
+
+      <div class="d-flex justify-content-between mt-2">
+        <button class="btn-outline-accent" onclick="goStep(2)">← Back</button>
+        <button class="btn-accent" onclick="goStep(4)">Next: Review →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div id="step4" style="display:none;">
+      <h2 style="font-size:1.3rem;margin-bottom:1.5rem;">Review & Submit</h2>
+      <div id="reviewContent"></div>
+      <div style="background:rgba(240,230,20,0.06);border:1px solid rgba(240,230,20,0.2);border-radius:8px;padding:1rem;margin-bottom:1.5rem;">
+        <label style="cursor:pointer;display:flex;align-items:flex-start;gap:0.7rem;color:var(--muted);font-size:0.9rem;">
+          <input type="checkbox" id="agreeTerms" style="accent-color:var(--accent);margin-top:3px;">
+          I confirm that all information provided is accurate and I agree to the terms & conditions.
+        </label>
+      </div>
+      <div class="d-flex justify-content-between">
+        <button class="btn-outline-accent" onclick="goStep(3)">← Back</button>
+        <button class="btn-accent" onclick="submitApplication()">Submit Application 🚀</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-wrap" id="successWrap">
+      <div class="success-icon">🎉</div>
+      <h2 style="font-size:1.5rem;margin-bottom:0.5rem;">Application Submitted!</h2>
+      <p style="color:var(--muted);margin-bottom:0.5rem;">Your application has been sent successfully.</p>
+      <p style="color:var(--accent);font-weight:700;margin-bottom:2rem;">📧 A confirmation email has been sent to your inbox.</p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <a href="candidate.html" class="btn-accent" style="text-decoration:none;">View My Applications</a>
+        <a href="listings.html" class="btn-outline-accent" style="text-decoration:none;">Browse More Jobs</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast-msg" id="toast"></div>
+
+<footer>
+  <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin-bottom:0.5rem;">Job<span style="color:var(--accent)">Nest</span></div>
+  © 2024 JobNest. Built for CodSoft Internship.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const JOBS = [
+  { id:1, title:"Frontend Developer", company:"Google", logo:"🏢", location:"Hyderabad", type:"Full-time", salary:"₹12–18 LPA" },
+  { id:2, title:"UI/UX Designer", company:"Microsoft", logo:"🖥️", location:"Remote", type:"Remote", salary:"₹8–14 LPA" },
+  { id:3, title:"Data Scientist", company:"Amazon", logo:"📦", location:"Bangalore", type:"Full-time", salary:"₹20–30 LPA" },
+  { id:4, title:"Product Manager", company:"Flipkart", logo:"🛒", location:"Bangalore", type:"Full-time", salary:"₹25–35 LPA" },
+  { id:5, title:"Backend Engineer", company:"Zomato", logo:"🍔", location:"Hyderabad", type:"Full-time", salary:"₹14–22 LPA" },
+  { id:6, title:"Marketing Manager", company:"Swiggy", logo:"🛵", location:"Mumbai", type:"Full-time", salary:"₹10–16 LPA" },
+];
+
+const urlParams = new URLSearchParams(window.location.search);
+const jobId = parseInt(urlParams.get('id')) || 1;
+const job = JOBS.find(j => j.id === jobId) || JOBS[0];
+
+document.getElementById('jobLogo').textContent = job.logo;
+document.getElementById('jobTitleBanner').textContent = job.title;
+document.getElementById('jobCompanyBanner').textContent = job.company;
+document.getElementById('jobSalaryBanner').textContent = job.salary;
+document.getElementById('jobLocBanner').textContent = job.location + ' · ' + job.type;
+
+document.getElementById('coverLetter').addEventListener('input', function() {
+  document.getElementById('charCount').textContent = this.value.length;
+});
+
+function goStep(n) {
+  // Validate step 1
+  if (n > 1) {
+    const fn = document.getElementById('firstName').value.trim();
+    const ln = document.getElementById('lastName').value.trim();
+    const em = document.getElementById('email').value.trim();
+    const ph = document.getElementById('phone').value.trim();
+    if (!fn || !ln || !em || !ph) { showToast('⚠️ Please fill all required fields!'); return; }
+  }
+
+  [1,2,3,4].forEach(i => {
+    document.getElementById('step'+i).style.display = 'none';
+    const circle = document.getElementById('s'+i);
+    if (i < n) { circle.className = 'step-circle done'; circle.innerHTML = '<i class="bi bi-check"></i>'; }
+    else if (i === n) { circle.className = 'step-circle active'; circle.textContent = i; }
+    else { circle.className = 'step-circle pending'; circle.textContent = i; }
+    if (i < 4) document.getElementById('line'+i).className = 'step-line' + (i < n ? ' done' : '');
+  });
+
+  document.getElementById('step'+n).style.display = 'block';
+  if (n === 4) buildReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function handleFileSelect(input) {
+  if (input.files[0]) {
+    document.getElementById('fileNameText').textContent = input.files[0].name;
+    document.getElementById('fileName').style.display = 'block';
+    document.getElementById('fileDrop').style.borderColor = 'var(--accent2)';
+  }
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('fileDrop').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    document.getElementById('fileNameText').textContent = file.name;
+    document.getElementById('fileName').style.display = 'block';
+    document.getElementById('fileDrop').style.borderColor = 'var(--accent2)';
+  }
+}
+
+function buildReview() {
+  document.getElementById('reviewContent').innerHTML = `
+    <div style="background:var(--surface2);border-radius:10px;padding:1.2rem;margin-bottom:1rem;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.8rem;color:var(--muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;">Personal Info</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;font-size:0.9rem;">
+        <div><span style="color:var(--muted)">Name:</span> ${document.getElementById('firstName').value} ${document.getElementById('lastName').value}</div>
+        <div><span style="color:var(--muted)">Email:</span> ${document.getElementById('email').value}</div>
+        <div><span style="color:var(--muted)">Phone:</span> ${document.getElementById('phone').value}</div>
+        <div><span style="color:var(--muted)">Location:</span> ${document.getElementById('location').value || '—'}</div>
+        <div><span style="color:var(--muted)">Experience:</span> ${document.getElementById('experience').value || '—'}</div>
+        <div><span style="color:var(--muted)">Notice:</span> ${document.getElementById('notice').value}</div>
+      </div>
+    </div>
+    <div style="background:var(--surface2);border-radius:10px;padding:1.2rem;margin-bottom:1rem;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.6rem;color:var(--muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;">Resume</div>
+      <div style="font-size:0.9rem;color:var(--accent2);">✅ ${document.getElementById('fileNameText').textContent || 'No file uploaded'}</div>
+    </div>
+    <div style="background:var(--surface2);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.6rem;color:var(--muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;">Cover Letter Preview</div>
+      <div style="font-size:0.88rem;color:var(--muted);line-height:1.6;max-height:80px;overflow:hidden;">${document.getElementById('coverLetter').value.substring(0,200) || '—'}...</div>
+    </div>
+  `;
+}
+
+function submitApplication() {
+  if (!document.getElementById('agreeTerms').checked) {
+    showToast('⚠️ Please agree to the terms!'); return;
+  }
+  document.querySelectorAll('#step1,#step2,#step3,#step4').forEach(el => el.style.display = 'none');
+  document.getElementById('successWrap').style.display = 'block';
+  [1,2,3,4].forEach(i => {
+    const c = document.getElementById('s'+i);
+    c.className = 'step-circle done';
+    c.innerHTML = '<i class="bi bi-check"></i>';
+    if (i < 4) document.getElementById('line'+i).className = 'step-line done';
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+</script>
+</body>
+</html>

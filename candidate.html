@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Candidate Dashboard – JobNest</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root { --primary:#0a0a0a; --accent:#f0e614; --accent2:#14f0a0; --surface:#141414; --surface2:#1e1e1e; --text:#f5f5f5; --muted:#888; --border:#2a2a2a; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--primary); color:var(--text); font-family:'DM Sans',sans-serif; }
+    h1,h2,h3 { font-family:'Syne',sans-serif; }
+    .navbar { background:rgba(10,10,10,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(10px); padding:1rem 0; position:sticky; top:0; z-index:999; }
+    .navbar-brand { font-family:'Syne',sans-serif; font-weight:800; font-size:1.5rem; color:var(--text)!important; letter-spacing:-1px; }
+    .navbar-brand span { color:var(--accent); }
+    .btn-accent { background:var(--accent); color:#000; font-weight:700; border:none; padding:0.5rem 1.4rem; border-radius:6px; font-family:'Syne',sans-serif; transition:transform 0.2s; cursor:pointer; }
+    .btn-accent:hover { transform:translateY(-2px); color:#000; }
+    .btn-outline-accent { border:1.5px solid var(--accent); color:var(--accent); background:transparent; padding:0.5rem 1.4rem; border-radius:6px; font-family:'Syne',sans-serif; font-weight:600; transition:all 0.2s; cursor:pointer; }
+    .btn-outline-accent:hover { background:var(--accent); color:#000; }
+
+    .sidebar { background:var(--surface); border-right:1px solid var(--border); min-height:calc(100vh - 65px); padding:1.5rem 0; position:sticky; top:65px; }
+    .sidebar-link { display:flex; align-items:center; gap:0.8rem; padding:0.75rem 1.5rem; color:var(--muted); text-decoration:none; font-weight:500; transition:all 0.2s; border-left:3px solid transparent; }
+    .sidebar-link:hover,.sidebar-link.active { color:var(--text); background:rgba(240,230,20,0.05); border-left-color:var(--accent); }
+    .sidebar-link i { width:20px; text-align:center; }
+    .sidebar-section { font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; padding:1rem 1.5rem 0.4rem; }
+
+    .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.5rem; }
+    .stat-num { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; }
+    .stat-label { color:var(--muted); font-size:0.85rem; margin-top:0.2rem; }
+    .card-dark { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-bottom:1.2rem; }
+    .card-head { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; margin-bottom:1.2rem; display:flex; justify-content:space-between; align-items:center; }
+
+    .appl-card { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:1rem 1.2rem; margin-bottom:0.8rem; display:flex; align-items:center; gap:1rem; transition:border-color 0.2s; }
+    .appl-card:hover { border-color:var(--accent); }
+    .company-logo { width:44px; height:44px; background:var(--surface); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+    .badge-active { background:rgba(20,240,160,0.1); color:var(--accent2); border:1px solid rgba(20,240,160,0.2); padding:0.2rem 0.7rem; border-radius:4px; font-size:0.75rem; font-weight:600; }
+    .badge-pending { background:rgba(240,230,20,0.1); color:var(--accent); border:1px solid rgba(240,230,20,0.2); padding:0.2rem 0.7rem; border-radius:4px; font-size:0.75rem; font-weight:600; }
+    .badge-closed { background:rgba(255,80,80,0.1); color:#ff5050; border:1px solid rgba(255,80,80,0.2); padding:0.2rem 0.7rem; border-radius:4px; font-size:0.75rem; font-weight:600; }
+
+    .profile-strength { background:var(--surface2); border-radius:6px; height:8px; overflow:hidden; margin-top:0.5rem; }
+    .profile-strength-bar { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:6px; transition:width 0.5s; }
+
+    .skill-tag { display:inline-block; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.3rem 0.8rem; border-radius:6px; font-size:0.82rem; margin-right:0.4rem; margin-bottom:0.4rem; }
+
+    .form-label-dark { font-size:0.82rem; color:var(--muted); margin-bottom:0.3rem; display:block; }
+    .form-control-dark { width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.65rem 1rem; border-radius:8px; outline:none; font-family:'DM Sans',sans-serif; margin-bottom:1rem; transition:border-color 0.2s; }
+    .form-control-dark:focus { border-color:var(--accent); }
+    .form-control-dark::placeholder { color:var(--muted); }
+
+    .notif-item { display:flex; gap:1rem; align-items:flex-start; padding:0.8rem 0; border-bottom:1px solid var(--border); }
+    .notif-item:last-child { border-bottom:none; }
+    .notif-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); flex-shrink:0; margin-top:6px; }
+    .notif-dot.read { background:var(--border); }
+
+    .toast-msg { position:fixed; bottom:2rem; right:2rem; background:var(--accent); color:#000; padding:1rem 1.5rem; border-radius:8px; font-weight:700; font-family:'Syne',sans-serif; display:none; z-index:9999; }
+    footer { background:var(--primary); border-top:1px solid var(--border); padding:1.5rem 0; text-align:center; color:var(--muted); font-size:0.85rem; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand" href="index.html">Job<span>Nest</span></a>
+    <div class="d-flex align-items-center gap-3 ms-auto">
+      <span style="color:var(--muted);font-size:0.9rem;">👋 Welcome, <strong style="color:var(--text)">Rahul Sharma</strong></span>
+      <a href="index.html" class="btn btn-outline-accent btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row g-0">
+
+    <!-- SIDEBAR -->
+    <div class="col-lg-2 d-none d-lg-block">
+      <div class="sidebar">
+        <div class="sidebar-section">Main</div>
+        <a href="#" class="sidebar-link active" onclick="showSection('overview')"><i class="bi bi-grid"></i> Overview</a>
+        <a href="#" class="sidebar-link" onclick="showSection('applications')"><i class="bi bi-file-text"></i> My Applications</a>
+        <a href="#" class="sidebar-link" onclick="showSection('saved')"><i class="bi bi-bookmark"></i> Saved Jobs</a>
+        <a href="#" class="sidebar-link" onclick="showSection('notifications')"><i class="bi bi-bell"></i> Notifications <span style="background:var(--accent);color:#000;font-size:0.7rem;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;">3</span></a>
+        <div class="sidebar-section">Profile</div>
+        <a href="#" class="sidebar-link" onclick="showSection('profile')"><i class="bi bi-person"></i> My Profile</a>
+        <a href="listings.html" class="sidebar-link"><i class="bi bi-search"></i> Find Jobs</a>
+        <a href="index.html" class="sidebar-link"><i class="bi bi-box-arrow-left"></i> Logout</a>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="col-lg-10">
+      <div class="p-4">
+
+        <!-- OVERVIEW -->
+        <div id="sec-overview">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h1 style="font-size:1.6rem;letter-spacing:-0.5px;">My Dashboard</h1>
+              <div style="color:var(--muted);font-size:0.9rem;">Frontend Developer · Hyderabad</div>
+            </div>
+            <a href="listings.html" class="btn-accent" style="text-decoration:none;"><i class="bi bi-search me-1"></i> Browse Jobs</a>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+              <div class="stat-card">
+                <div class="stat-num" style="color:var(--accent);">8</div>
+                <div class="stat-label">Total Applied</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-card">
+                <div class="stat-num" style="color:var(--accent2);">3</div>
+                <div class="stat-label">Shortlisted</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-card">
+                <div class="stat-num">5</div>
+                <div class="stat-label">Saved Jobs</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-card">
+                <div class="stat-num">24</div>
+                <div class="stat-label">Profile Views</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-lg-7">
+              <div class="card-dark">
+                <div class="card-head">Recent Applications <button class="btn-accent btn-sm" onclick="showSection('applications')">View All</button></div>
+                <div class="appl-card">
+                  <div class="company-logo">🏢</div>
+                  <div class="flex-grow-1">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;">Frontend Developer</div>
+                    <div style="color:var(--muted);font-size:0.82rem;">Google · Hyderabad · 2 days ago</div>
+                  </div>
+                  <span class="badge-pending">Under Review</span>
+                </div>
+                <div class="appl-card">
+                  <div class="company-logo">🖥️</div>
+                  <div class="flex-grow-1">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;">React Developer</div>
+                    <div style="color:var(--muted);font-size:0.82rem;">Paytm · Remote · 4 days ago</div>
+                  </div>
+                  <span class="badge-active">Shortlisted</span>
+                </div>
+                <div class="appl-card">
+                  <div class="company-logo">💳</div>
+                  <div class="flex-grow-1">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;">UI Developer</div>
+                    <div style="color:var(--muted);font-size:0.82rem;">Razorpay · Bangalore · 1 week ago</div>
+                  </div>
+                  <span class="badge-closed">Rejected</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-5">
+              <div class="card-dark mb-3">
+                <div class="card-head">Profile Strength</div>
+                <div style="font-size:2rem;font-weight:800;font-family:'Syne',sans-serif;color:var(--accent);">72%</div>
+                <div class="profile-strength"><div class="profile-strength-bar" style="width:72%"></div></div>
+                <div style="margin-top:1rem;font-size:0.85rem;color:var(--muted);">Add these to reach 100%:</div>
+                <ul style="list-style:none;padding:0;margin-top:0.5rem;">
+                  <li style="font-size:0.85rem;color:var(--muted);padding:0.3rem 0;">→ <span style="color:var(--text)">Add portfolio link</span></li>
+                  <li style="font-size:0.85rem;color:var(--muted);padding:0.3rem 0;">→ <span style="color:var(--text)">Add work experience</span></li>
+                  <li style="font-size:0.85rem;color:var(--muted);padding:0.3rem 0;">→ <span style="color:var(--text)">Upload resume</span></li>
+                </ul>
+                <button class="btn-accent w-100 mt-2 btn-sm" onclick="showSection('profile')">Complete Profile</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- APPLICATIONS -->
+        <div id="sec-applications" style="display:none;">
+          <h1 style="font-size:1.6rem;letter-spacing:-0.5px;margin-bottom:1.5rem;">My Applications</h1>
+          <div class="card-dark">
+            ${[
+              {logo:'🏢',title:'Frontend Developer',company:'Google',loc:'Hyderabad',date:'2 days ago',status:'Under Review',badge:'badge-pending'},
+              {logo:'🖥️',title:'React Developer',company:'Paytm',loc:'Remote',date:'4 days ago',status:'Shortlisted',badge:'badge-active'},
+              {logo:'💳',title:'UI Developer',company:'Razorpay',loc:'Bangalore',date:'1 week ago',status:'Rejected',badge:'badge-closed'},
+              {logo:'📦',title:'Frontend Engineer',company:'Amazon',loc:'Bangalore',date:'1 week ago',status:'Under Review',badge:'badge-pending'},
+              {logo:'🍔',title:'Web Developer',company:'Zomato',loc:'Hyderabad',date:'2 weeks ago',status:'Shortlisted',badge:'badge-active'},
+            ].map(a => `
+              <div class="appl-card">
+                <div class="company-logo">${a.logo}</div>
+                <div class="flex-grow-1">
+                  <div style="font-family:'Syne',sans-serif;font-weight:700;">${a.title}</div>
+                  <div style="color:var(--muted);font-size:0.82rem;">${a.company} · ${a.loc} · ${a.date}</div>
+                </div>
+                <span class="${a.badge} me-2">${a.status}</span>
+                <button class="btn-outline-accent btn-sm" onclick="showToast('Opening job details...');setTimeout(()=>window.location='job-detail.html',800)">View</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- SAVED JOBS -->
+        <div id="sec-saved" style="display:none;">
+          <h1 style="font-size:1.6rem;letter-spacing:-0.5px;margin-bottom:1.5rem;">Saved Jobs</h1>
+          <div class="card-dark">
+            ${[
+              {logo:'🛒',title:'Product Manager',company:'Flipkart',loc:'Bangalore',salary:'₹25–35 LPA'},
+              {logo:'📚',title:'Graphic Designer',company:"Byju's",loc:'Bangalore',salary:'₹5–8 LPA'},
+              {logo:'🏛️',title:'Content Writer',company:'TCS',loc:'Mumbai',salary:'₹3–6 LPA'},
+              {logo:'🛵',title:'Marketing Manager',company:'Swiggy',loc:'Mumbai',salary:'₹10–16 LPA'},
+              {logo:'📦',title:'Data Scientist',company:'Amazon',loc:'Bangalore',salary:'₹20–30 LPA'},
+            ].map((j,i) => `
+              <div class="appl-card">
+                <div class="company-logo">${j.logo}</div>
+                <div class="flex-grow-1">
+                  <div style="font-family:'Syne',sans-serif;font-weight:700;">${j.title}</div>
+                  <div style="color:var(--muted);font-size:0.82rem;">${j.company} · ${j.loc}</div>
+                </div>
+                <div style="color:var(--accent);font-weight:700;font-size:0.9rem;margin-right:1rem;">${j.salary}</div>
+                <a href="apply.html?id=${i+1}" class="btn-accent btn-sm me-1" style="text-decoration:none;">Apply</a>
+                <button class="btn-danger-soft" onclick="this.closest('.appl-card').remove();showToast('Removed from saved jobs')">✕</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div id="sec-notifications" style="display:none;">
+          <h1 style="font-size:1.6rem;letter-spacing:-0.5px;margin-bottom:1.5rem;">Notifications</h1>
+          <div class="card-dark">
+            <div class="notif-item">
+              <div class="notif-dot"></div>
+              <div>
+                <div style="font-weight:600;font-size:0.95rem;">🎉 You've been shortlisted!</div>
+                <div style="color:var(--muted);font-size:0.85rem;">Paytm has shortlisted you for React Developer role.</div>
+                <div style="color:var(--muted);font-size:0.78rem;margin-top:0.2rem;">2 hours ago</div>
+              </div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot"></div>
+              <div>
+                <div style="font-weight:600;font-size:0.95rem;">📧 Application Received</div>
+                <div style="color:var(--muted);font-size:0.85rem;">Google confirmed your application for Frontend Developer.</div>
+                <div style="color:var(--muted);font-size:0.78rem;margin-top:0.2rem;">2 days ago</div>
+              </div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot"></div>
+              <div>
+                <div style="font-weight:600;font-size:0.95rem;">🎉 You've been shortlisted!</div>
+                <div style="color:var(--muted);font-size:0.85rem;">Zomato has shortlisted you for Web Developer role.</div>
+                <div style="color:var(--muted);font-size:0.78rem;margin-top:0.2rem;">3 days ago</div>
+              </div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot read"></div>
+              <div>
+                <div style="font-weight:600;font-size:0.95rem;color:var(--muted);">Profile Incomplete</div>
+                <div style="color:var(--muted);font-size:0.85rem;">Complete your profile to get more visibility.</div>
+                <div style="color:var(--muted);font-size:0.78rem;margin-top:0.2rem;">1 week ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROFILE -->
+        <div id="sec-profile" style="display:none;">
+          <h1 style="font-size:1.6rem;letter-spacing:-0.5px;margin-bottom:1.5rem;">My Profile</h1>
+          <div class="row g-4" style="max-width:900px;">
+            <div class="col-lg-4">
+              <div class="card-dark text-center">
+                <div style="width:80px;height:80px;background:rgba(240,230,20,0.1);border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem;">👤</div>
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;">Rahul Sharma</div>
+                <div style="color:var(--muted);font-size:0.9rem;margin-bottom:1rem;">Frontend Developer</div>
+                <button class="btn-accent w-100 btn-sm" onclick="showToast('📷 Upload photo feature!')">Change Photo</button>
+                <hr style="border-color:var(--border);margin:1rem 0;">
+                <div style="text-align:left;">
+                  <div style="font-size:0.82rem;color:var(--muted);margin-bottom:0.3rem;"><i class="bi bi-envelope me-2"></i>rahul@example.com</div>
+                  <div style="font-size:0.82rem;color:var(--muted);margin-bottom:0.3rem;"><i class="bi bi-phone me-2"></i>+91 9876543210</div>
+                  <div style="font-size:0.82rem;color:var(--muted);"><i class="bi bi-geo-alt me-2"></i>Hyderabad, India</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <div class="card-dark">
+                <div class="card-head">Edit Profile</div>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label-dark">Full Name</label>
+                    <input type="text" class="form-control-dark" value="Rahul Sharma"/>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label-dark">Job Title</label>
+                    <input type="text" class="form-control-dark" value="Frontend Developer"/>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label-dark">Email</label>
+                    <input type="email" class="form-control-dark" value="rahul@example.com"/>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label-dark">Phone</label>
+                    <input type="tel" class="form-control-dark" value="+91 9876543210"/>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label-dark">Experience</label>
+                    <select class="form-control-dark"><option selected>2–4 years</option><option>1–2 years</option><option>4–6 years</option></select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label-dark">Expected Salary</label>
+                    <input type="text" class="form-control-dark" value="12–15 LPA"/>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label-dark">Skills</label>
+                    <div>
+                      <span class="skill-tag">React</span><span class="skill-tag">JavaScript</span><span class="skill-tag">HTML/CSS</span>
+                      <span class="skill-tag">Bootstrap</span><span class="skill-tag">Git</span>
+                      <button class="btn-outline-accent btn-sm" onclick="showToast('Add skills feature!')">+ Add Skill</button>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label-dark">Bio</label>
+                    <textarea class="form-control-dark" rows="3">Passionate frontend developer with 3 years of experience building responsive web applications using React and modern JavaScript.</textarea>
+                  </div>
+                  <div class="col-12">
+                    <button class="btn-accent" onclick="showToast('✅ Profile updated!')">Save Changes</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-msg" id="toast"></div>
+
+<footer>
+  <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin-bottom:0.5rem;">Job<span style="color:var(--accent)">Nest</span></div>
+  © 2024 JobNest. Built for CodSoft Internship.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const btnDangerSoftStyle = `.btn-danger-soft{background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);color:#ff5050;padding:0.3rem 0.8rem;border-radius:6px;font-size:0.8rem;cursor:pointer;}`;
+const s = document.createElement('style'); s.textContent = btnDangerSoftStyle; document.head.appendChild(s);
+
+function showSection(name) {
+  document.querySelectorAll('[id^="sec-"]').forEach(el => el.style.display = 'none');
+  document.getElementById('sec-' + name).style.display = 'block';
+  document.querySelectorAll('.sidebar-link').forEach(l => {
+    l.classList.toggle('active', l.getAttribute('onclick')?.includes(name));
+  });
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
+}
+</script>
+</body>
+</html>

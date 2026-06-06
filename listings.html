@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Listings – JobNest</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root { --primary:#0a0a0a; --accent:#f0e614; --accent2:#14f0a0; --surface:#141414; --surface2:#1e1e1e; --text:#f5f5f5; --muted:#888; --border:#2a2a2a; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--primary); color:var(--text); font-family:'DM Sans',sans-serif; }
+    h1,h2,h3,h4,h5 { font-family:'Syne',sans-serif; }
+
+    .navbar { background:rgba(10,10,10,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(10px); padding:1rem 0; position:sticky; top:0; z-index:999; }
+    .navbar-brand { font-family:'Syne',sans-serif; font-weight:800; font-size:1.5rem; color:var(--text) !important; letter-spacing:-1px; }
+    .navbar-brand span { color:var(--accent); }
+    .nav-link { color:var(--muted) !important; font-weight:500; transition:color 0.2s; }
+    .nav-link:hover { color:var(--accent) !important; }
+    .btn-accent { background:var(--accent); color:#000; font-weight:700; border:none; padding:0.5rem 1.4rem; border-radius:4px; font-family:'Syne',sans-serif; transition:transform 0.2s, box-shadow 0.2s; }
+    .btn-accent:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(240,230,20,0.3); color:#000; }
+    .btn-outline-accent { border:1.5px solid var(--accent); color:var(--accent); background:transparent; padding:0.5rem 1.4rem; border-radius:4px; font-family:'Syne',sans-serif; font-weight:600; transition:all 0.2s; }
+    .btn-outline-accent:hover { background:var(--accent); color:#000; }
+
+    .page-header { background:var(--surface); border-bottom:1px solid var(--border); padding:2.5rem 0; }
+    .page-header h1 { font-size:2rem; font-weight:800; letter-spacing:-1px; }
+
+    .search-bar { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:0.4rem; display:flex; gap:0.5rem; }
+    .search-bar input { background:transparent; border:none; color:var(--text); padding:0.6rem 1rem; flex:1; outline:none; font-family:'DM Sans',sans-serif; }
+    .search-bar input::placeholder { color:var(--muted); }
+
+    .filter-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.5rem; position:sticky; top:80px; }
+    .filter-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:1rem; margin-top:1.5rem; }
+    .filter-title:first-child { margin-top:0; }
+    .filter-check { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.6rem; cursor:pointer; }
+    .filter-check input[type=checkbox] { accent-color:var(--accent); width:16px; height:16px; }
+    .filter-check label { font-size:0.9rem; color:var(--muted); cursor:pointer; transition:color 0.2s; }
+    .filter-check:hover label { color:var(--text); }
+
+    .job-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.5rem; transition:border-color 0.2s, transform 0.2s; cursor:pointer; margin-bottom:1rem; }
+    .job-card:hover { border-color:var(--accent); transform:translateX(4px); }
+    .company-logo { width:48px; height:48px; background:var(--surface2); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; }
+    .job-title { font-family:'Syne',sans-serif; font-weight:700; font-size:1.05rem; color:var(--text); }
+    .company-name { color:var(--muted); font-size:0.9rem; }
+    .job-badge { display:inline-block; padding:0.25rem 0.7rem; border-radius:4px; font-size:0.75rem; font-weight:600; margin-right:0.4rem; }
+    .badge-type { background:rgba(240,230,20,0.1); color:var(--accent); border:1px solid rgba(240,230,20,0.2); }
+    .badge-loc { background:rgba(20,240,160,0.1); color:var(--accent2); border:1px solid rgba(20,240,160,0.2); }
+    .badge-exp { background:rgba(255,255,255,0.05); color:var(--muted); border:1px solid var(--border); }
+    .job-salary { font-family:'Syne',sans-serif; font-weight:700; color:var(--accent); }
+    .job-posted { color:var(--muted); font-size:0.8rem; }
+
+    .results-count { color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; }
+    .results-count span { color:var(--accent); font-weight:700; }
+
+    .sort-select { background:var(--surface); border:1px solid var(--border); color:var(--text); padding:0.4rem 0.8rem; border-radius:6px; outline:none; font-family:'DM Sans',sans-serif; font-size:0.9rem; }
+    .sort-select option { background:var(--surface); }
+
+    .no-results { text-align:center; padding:4rem 2rem; color:var(--muted); }
+    .no-results i { font-size:3rem; margin-bottom:1rem; display:block; }
+
+    footer { background:var(--primary); border-top:1px solid var(--border); padding:2rem 0; text-align:center; color:var(--muted); font-size:0.85rem; }
+    .footer-brand span { color:var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">Job<span>Nest</span></a>
+    <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon" style="filter:invert(1)"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
+        <li class="nav-item"><a class="nav-link active" style="color:var(--accent)!important" href="listings.html">Find Jobs</a></li>
+        <li class="nav-item"><a class="nav-link" href="employer.html">For Employers</a></li>
+        <li class="nav-item"><a class="nav-link" href="candidate.html">Dashboard</a></li>
+        <li class="nav-item ms-2"><a href="login.html" class="btn btn-outline-accent btn-sm">Login</a></li>
+        <li class="nav-item"><a href="login.html" class="btn btn-accent btn-sm">Register</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1 class="mb-3">Browse All Jobs</h1>
+    <div class="search-bar" style="max-width:600px;">
+      <i class="bi bi-search" style="color:var(--muted);padding:0.6rem 0.5rem 0.6rem 0.8rem;font-size:1.1rem;"></i>
+      <input type="text" id="searchInput" placeholder="Search job title, company, or skill..."/>
+      <button class="btn btn-accent px-3" onclick="filterJobs()">Search</button>
+    </div>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-4">
+
+    <!-- FILTERS -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="filter-card">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:1.5rem;">Filters</div>
+
+        <div class="filter-title">Job Type</div>
+        <div class="filter-check"><input type="checkbox" id="ft" onchange="filterJobs()"><label for="ft">Full-time</label></div>
+        <div class="filter-check"><input type="checkbox" id="pt" onchange="filterJobs()"><label for="pt">Part-time</label></div>
+        <div class="filter-check"><input type="checkbox" id="rm" onchange="filterJobs()"><label for="rm">Remote</label></div>
+        <div class="filter-check"><input type="checkbox" id="ct" onchange="filterJobs()"><label for="ct">Contract</label></div>
+
+        <div class="filter-title">Location</div>
+        <div class="filter-check"><input type="checkbox" id="hyd" onchange="filterJobs()"><label for="hyd">Hyderabad</label></div>
+        <div class="filter-check"><input type="checkbox" id="blr" onchange="filterJobs()"><label for="blr">Bangalore</label></div>
+        <div class="filter-check"><input type="checkbox" id="mum" onchange="filterJobs()"><label for="mum">Mumbai</label></div>
+        <div class="filter-check"><input type="checkbox" id="rem" onchange="filterJobs()"><label for="rem">Remote</label></div>
+
+        <div class="filter-title">Category</div>
+        <div class="filter-check"><input type="checkbox" id="tech" onchange="filterJobs()"><label for="tech">Technology</label></div>
+        <div class="filter-check"><input type="checkbox" id="des" onchange="filterJobs()"><label for="des">Design</label></div>
+        <div class="filter-check"><input type="checkbox" id="mkt" onchange="filterJobs()"><label for="mkt">Marketing</label></div>
+        <div class="filter-check"><input type="checkbox" id="mgmt" onchange="filterJobs()"><label for="mgmt">Management</label></div>
+
+        <button class="btn btn-outline-accent btn-sm w-100 mt-3" onclick="clearFilters()">Clear Filters</button>
+      </div>
+    </div>
+
+    <!-- JOB LIST -->
+    <div class="col-lg-9">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="results-count">Showing <span id="resultCount">0</span> jobs</div>
+        <select class="sort-select" onchange="filterJobs()">
+          <option value="newest">Newest First</option>
+          <option value="salary">Highest Salary</option>
+          <option value="company">Company A-Z</option>
+        </select>
+      </div>
+      <div id="jobList"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-brand" style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin-bottom:0.5rem;">Job<span>Nest</span></div>
+  © 2024 JobNest. Built for CodSoft Internship.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const JOBS = [
+  { id:1, title:"Frontend Developer", company:"Google", logo:"🏢", location:"Hyderabad", type:"Full-time", exp:"2-4 yrs", salary:"₹12–18 LPA", category:"Technology", posted:"2 days ago", desc:"Build amazing user interfaces using React and modern web technologies." },
+  { id:2, title:"UI/UX Designer", company:"Microsoft", logo:"🖥️", location:"Remote", type:"Remote", exp:"1-3 yrs", salary:"₹8–14 LPA", category:"Design", posted:"1 day ago", desc:"Design intuitive and beautiful digital experiences for millions of users." },
+  { id:3, title:"Data Scientist", company:"Amazon", logo:"📦", location:"Bangalore", type:"Full-time", exp:"3-5 yrs", salary:"₹20–30 LPA", category:"Technology", posted:"3 days ago", desc:"Analyze large datasets and build ML models to drive business decisions." },
+  { id:4, title:"Product Manager", company:"Flipkart", logo:"🛒", location:"Bangalore", type:"Full-time", exp:"4-6 yrs", salary:"₹25–35 LPA", category:"Management", posted:"5 days ago", desc:"Own product roadmap and drive growth for one of India's top e-commerce platforms." },
+  { id:5, title:"Backend Engineer", company:"Zomato", logo:"🍔", location:"Hyderabad", type:"Full-time", exp:"2-4 yrs", salary:"₹14–22 LPA", category:"Technology", posted:"1 day ago", desc:"Build scalable APIs and microservices powering millions of food orders." },
+  { id:6, title:"Marketing Manager", company:"Swiggy", logo:"🛵", location:"Mumbai", type:"Full-time", exp:"3-5 yrs", salary:"₹10–16 LPA", category:"Marketing", posted:"4 days ago", desc:"Lead digital marketing campaigns and drive user acquisition growth." },
+  { id:7, title:"React Developer", company:"Paytm", logo:"💳", location:"Remote", type:"Remote", exp:"1-3 yrs", salary:"₹10–15 LPA", category:"Technology", posted:"2 days ago", desc:"Build fintech products used by 300M+ users across India." },
+  { id:8, title:"Graphic Designer", company:"Byju's", logo:"📚", location:"Bangalore", type:"Full-time", exp:"0-2 yrs", salary:"₹5–8 LPA", category:"Design", posted:"6 days ago", desc:"Create engaging visual content for India's largest edtech platform." },
+  { id:9, title:"DevOps Engineer", company:"Razorpay", logo:"⚡", location:"Bangalore", type:"Full-time", exp:"3-5 yrs", salary:"₹18–28 LPA", category:"Technology", posted:"3 days ago", desc:"Manage cloud infrastructure and CI/CD pipelines for payment systems." },
+  { id:10, title:"Content Writer", company:"TCS", logo:"🏛️", location:"Mumbai", type:"Part-time", exp:"0-2 yrs", salary:"₹3–6 LPA", category:"Marketing", posted:"7 days ago", desc:"Write technical blogs, whitepapers, and marketing content for enterprise clients." },
+];
+
+localStorage.setItem('jobs', JSON.stringify(JOBS));
+
+function filterJobs() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const types = ['Full-time','Part-time','Remote','Contract'].filter((_,i) =>
+    [document.getElementById('ft'), document.getElementById('pt'), document.getElementById('rm'), document.getElementById('ct')][i]?.checked
+  );
+  const locs = ['Hyderabad','Bangalore','Mumbai','Remote'].filter((_,i) =>
+    [document.getElementById('hyd'), document.getElementById('blr'), document.getElementById('mum'), document.getElementById('rem')][i]?.checked
+  );
+  const cats = ['Technology','Design','Marketing','Management'].filter((_,i) =>
+    [document.getElementById('tech'), document.getElementById('des'), document.getElementById('mkt'), document.getElementById('mgmt')][i]?.checked
+  );
+
+  let filtered = JOBS.filter(j => {
+    const matchQ = !q || j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q) || j.category.toLowerCase().includes(q);
+    const matchType = types.length === 0 || types.includes(j.type);
+    const matchLoc = locs.length === 0 || locs.includes(j.location);
+    const matchCat = cats.length === 0 || cats.includes(j.category);
+    return matchQ && matchType && matchLoc && matchCat;
+  });
+
+  document.getElementById('resultCount').textContent = filtered.length;
+  const container = document.getElementById('jobList');
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><i class="bi bi-search"></i><div>No jobs found matching your criteria.</div><button class="btn btn-outline-accent mt-3" onclick="clearFilters()">Clear Filters</button></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(job => `
+    <div class="job-card" onclick="window.location='job-detail.html?id=${job.id}'">
+      <div class="d-flex gap-3 align-items-start">
+        <div class="company-logo">${job.logo}</div>
+        <div class="flex-grow-1">
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div>
+              <div class="job-title">${job.title}</div>
+              <div class="company-name">${job.company}</div>
+            </div>
+            <div class="text-end">
+              <div class="job-salary">${job.salary}</div>
+              <div class="job-posted">${job.posted}</div>
+            </div>
+          </div>
+          <div class="mt-2">
+            <span class="job-badge badge-type">${job.type}</span>
+            <span class="job-badge badge-loc"><i class="bi bi-geo-alt"></i> ${job.location}</span>
+            <span class="job-badge badge-exp">${job.exp}</span>
+            <span class="job-badge badge-exp">${job.category}</span>
+          </div>
+          <p style="color:var(--muted);font-size:0.88rem;margin-top:0.6rem;margin-bottom:0;">${job.desc}</p>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function clearFilters() {
+  ['ft','pt','rm','ct','hyd','blr','mum','rem','tech','des','mkt','mgmt'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.checked = false;
+  });
+  document.getElementById('searchInput').value = '';
+  filterJobs();
+}
+
+// Check URL search param
+const urlParams = new URLSearchParams(window.location.search);
+const qParam = urlParams.get('q');
+if (qParam) document.getElementById('searchInput').value = qParam;
+
+filterJobs();
+
+document.getElementById('searchInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') filterJobs();
+});
+</script>
+</body>
+</html>

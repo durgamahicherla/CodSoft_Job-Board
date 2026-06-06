@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JobNest – Find Your Dream Job</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #0a0a0a;
+      --accent: #f0e614;
+      --accent2: #14f0a0;
+      --surface: #141414;
+      --surface2: #1e1e1e;
+      --text: #f5f5f5;
+      --muted: #888;
+      --border: #2a2a2a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--primary); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+    h1,h2,h3,h4,h5 { font-family: 'Syne', sans-serif; }
+
+    /* NAVBAR */
+    .navbar { background: rgba(10,10,10,0.95); border-bottom: 1px solid var(--border); backdrop-filter: blur(10px); padding: 1rem 0; position: sticky; top: 0; z-index: 999; }
+    .navbar-brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem; color: var(--text) !important; letter-spacing: -1px; }
+    .navbar-brand span { color: var(--accent); }
+    .nav-link { color: var(--muted) !important; font-weight: 500; transition: color 0.2s; }
+    .nav-link:hover { color: var(--accent) !important; }
+    .btn-accent { background: var(--accent); color: #000; font-weight: 700; border: none; padding: 0.5rem 1.4rem; border-radius: 4px; font-family: 'Syne', sans-serif; transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(240,230,20,0.3); color: #000; }
+    .btn-outline-accent { border: 1.5px solid var(--accent); color: var(--accent); background: transparent; padding: 0.5rem 1.4rem; border-radius: 4px; font-family: 'Syne', sans-serif; font-weight: 600; transition: all 0.2s; }
+    .btn-outline-accent:hover { background: var(--accent); color: #000; }
+
+    /* HERO */
+    .hero { min-height: 90vh; display: flex; align-items: center; position: relative; overflow: hidden; padding: 4rem 0; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 50%, rgba(240,230,20,0.07) 0%, transparent 60%), radial-gradient(ellipse at 20% 80%, rgba(20,240,160,0.05) 0%, transparent 50%); }
+    .hero-tag { display: inline-block; background: rgba(240,230,20,0.1); border: 1px solid rgba(240,230,20,0.3); color: var(--accent); padding: 0.35rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 800; line-height: 1.05; letter-spacing: -2px; margin-bottom: 1.5rem; }
+    .hero h1 .highlight { color: var(--accent); position: relative; }
+    .hero p { font-size: 1.15rem; color: var(--muted); max-width: 500px; line-height: 1.7; margin-bottom: 2.5rem; }
+
+    /* SEARCH BAR */
+    .search-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.5rem; display: flex; gap: 0.5rem; max-width: 580px; }
+    .search-box input { background: transparent; border: none; color: var(--text); padding: 0.6rem 1rem; flex: 1; outline: none; font-family: 'DM Sans', sans-serif; }
+    .search-box input::placeholder { color: var(--muted); }
+    .search-box select { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 0.6rem 0.8rem; border-radius: 8px; outline: none; font-family: 'DM Sans', sans-serif; }
+    .search-box select option { background: var(--surface); }
+
+    /* STATS */
+    .stats { display: flex; gap: 2.5rem; margin-top: 2.5rem; flex-wrap: wrap; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--text); }
+    .stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* HERO IMAGE SIDE */
+    .hero-visual { position: relative; }
+    .floating-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; position: absolute; animation: float 3s ease-in-out infinite; }
+    .floating-card.card1 { top: 10%; right: -10px; animation-delay: 0s; }
+    .floating-card.card2 { bottom: 20%; left: -20px; animation-delay: 1.5s; }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .hero-img-placeholder { width: 100%; height: 420px; background: var(--surface); border-radius: 20px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 6rem; color: var(--border); }
+
+    /* SECTION */
+    .section { padding: 5rem 0; }
+    .section-label { color: var(--accent); font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.75rem; }
+    .section-title { font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 800; letter-spacing: -1px; margin-bottom: 1rem; }
+
+    /* JOB CARD */
+    .job-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; transition: border-color 0.2s, transform 0.2s; cursor: pointer; height: 100%; }
+    .job-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .company-logo { width: 48px; height: 48px; background: var(--surface2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; }
+    .job-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 0.3rem; color: var(--text); }
+    .company-name { color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem; }
+    .job-badge { display: inline-block; padding: 0.25rem 0.7rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-right: 0.4rem; margin-bottom: 0.4rem; }
+    .badge-type { background: rgba(240,230,20,0.1); color: var(--accent); border: 1px solid rgba(240,230,20,0.2); }
+    .badge-loc { background: rgba(20,240,160,0.1); color: var(--accent2); border: 1px solid rgba(20,240,160,0.2); }
+    .badge-exp { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border); }
+    .job-salary { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); font-size: 1rem; margin-top: 1rem; }
+    .job-posted { color: var(--muted); font-size: 0.8rem; }
+
+    /* CATEGORIES */
+    .cat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.2s; cursor: pointer; }
+    .cat-card:hover { border-color: var(--accent); background: rgba(240,230,20,0.05); }
+    .cat-icon { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
+    .cat-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem; }
+    .cat-count { color: var(--muted); font-size: 0.8rem; }
+
+    /* HOW IT WORKS */
+    .step-num { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; color: rgba(240,230,20,0.15); line-height: 1; margin-bottom: 0.5rem; }
+    .step-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .step-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+    /* COMPANIES */
+    .company-strip { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2rem 0; overflow: hidden; }
+    .company-logos { display: flex; gap: 3rem; align-items: center; animation: scroll 20s linear infinite; white-space: nowrap; }
+    .company-logos span { color: var(--muted); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 1px; }
+    @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* CTA */
+    .cta-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 5rem 0; text-align: center; position: relative; overflow: hidden; }
+    .cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(240,230,20,0.06) 0%, transparent 70%); }
+
+    /* FOOTER */
+    footer { background: var(--primary); border-top: 1px solid var(--border); padding: 3rem 0 1.5rem; }
+    .footer-brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; margin-bottom: 0.75rem; }
+    .footer-brand span { color: var(--accent); }
+    .footer-link { color: var(--muted); text-decoration: none; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; transition: color 0.2s; }
+    .footer-link:hover { color: var(--accent); }
+    .footer-bottom { border-top: 1px solid var(--border); margin-top: 2rem; padding-top: 1.5rem; color: var(--muted); font-size: 0.85rem; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .stats { gap: 1.5rem; }
+      .search-box { flex-direction: column; }
+      .hero { min-height: auto; padding: 3rem 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">Job<span>Nest</span></a>
+    <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon" style="filter:invert(1)"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
+        <li class="nav-item"><a class="nav-link" href="listings.html">Find Jobs</a></li>
+        <li class="nav-item"><a class="nav-link" href="employer.html">For Employers</a></li>
+        <li class="nav-item"><a class="nav-link" href="candidate.html">Dashboard</a></li>
+        <li class="nav-item ms-2"><a href="login.html" class="btn btn-outline-accent btn-sm">Login</a></li>
+        <li class="nav-item"><a href="login.html" class="btn btn-accent btn-sm">Register</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6" data-aos="fade-up">
+        <div class="hero-tag">🚀 #1 Job Platform 2024</div>
+        <h1>Find Your <span class="highlight">Dream</span><br/>Career Today</h1>
+        <p>Connect with top companies, discover thousands of opportunities, and take the next step in your professional journey.</p>
+
+        <!-- Search -->
+        <div class="search-box">
+          <i class="bi bi-search" style="color:var(--muted); padding: 0.6rem 0.5rem 0.6rem 0.8rem; font-size:1.1rem;"></i>
+          <input type="text" placeholder="Job title, skills, or company..." id="heroSearch"/>
+          <select>
+            <option>All Locations</option>
+            <option>Hyderabad</option>
+            <option>Bangalore</option>
+            <option>Mumbai</option>
+            <option>Remote</option>
+          </select>
+          <button class="btn btn-accent px-3" onclick="searchJobs()">Search</button>
+        </div>
+
+        <div class="stats">
+          <div>
+            <div class="stat-num">12K+</div>
+            <div class="stat-label">Jobs Posted</div>
+          </div>
+          <div>
+            <div class="stat-num">8K+</div>
+            <div class="stat-label">Companies</div>
+          </div>
+          <div>
+            <div class="stat-num">95K+</div>
+            <div class="stat-label">Candidates</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 d-none d-lg-block">
+        <div class="hero-visual position-relative">
+          <div class="hero-img-placeholder">💼</div>
+          <!-- Floating Cards -->
+          <div class="floating-card card1">
+            <div class="d-flex align-items-center gap-2">
+              <div style="width:36px;height:36px;background:var(--surface2);border-radius:8px;display:flex;align-items:center;justify-content:center;">🏢</div>
+              <div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;">UI/UX Designer</div>
+                <div style="color:var(--muted);font-size:0.75rem;">Google Inc.</div>
+              </div>
+            </div>
+          </div>
+          <div class="floating-card card2">
+            <div style="color:var(--accent2);font-size:0.75rem;font-weight:600;">✅ Application Sent!</div>
+            <div style="font-size:0.8rem;margin-top:0.2rem;">Full Stack Developer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPANY STRIP -->
+<div class="company-strip">
+  <div class="container-fluid">
+    <div class="company-logos">
+      <span>GOOGLE</span><span>MICROSOFT</span><span>AMAZON</span><span>FLIPKART</span>
+      <span>INFOSYS</span><span>TCS</span><span>WIPRO</span><span>ZOMATO</span>
+      <span>SWIGGY</span><span>PAYTM</span><span>BYJU'S</span><span>RAZORPAY</span>
+      <!-- Duplicate for seamless loop -->
+      <span>GOOGLE</span><span>MICROSOFT</span><span>AMAZON</span><span>FLIPKART</span>
+      <span>INFOSYS</span><span>TCS</span><span>WIPRO</span><span>ZOMATO</span>
+      <span>SWIGGY</span><span>PAYTM</span><span>BYJU'S</span><span>RAZORPAY</span>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURED JOBS -->
+<section class="section">
+  <div class="container">
+    <div class="row align-items-end mb-4">
+      <div class="col">
+        <div class="section-label">Opportunities</div>
+        <h2 class="section-title mb-0">Featured Job Listings</h2>
+      </div>
+      <div class="col-auto">
+        <a href="listings.html" class="btn btn-outline-accent">View All Jobs →</a>
+      </div>
+    </div>
+    <div class="row g-4" id="featuredJobs">
+      <!-- Jobs injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section" style="background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="section-label">Explore</div>
+      <h2 class="section-title">Browse by Category</h2>
+    </div>
+    <div class="row g-3">
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="cat-card" onclick="window.location='listings.html'">
+          <span class="cat-icon">💻</span>
+          <div class="cat-name">Technology</div>
+          <div class="cat-count">1,240 jobs</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="cat-card" onclick="window.location='listings.html'">
+          <span class="cat-icon">🎨</span>
+          <div class="cat-name">Design</div>
+          <div class="cat-count">430 jobs</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="cat-card" onclick="window.location='listings.html'">
+          <span class="cat-icon">📊</span>
+          <div class="cat-name">Marketing</div>
+          <div class="cat-count">680 jobs</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="cat-card" onclick="window.location='listings.html'">
+          <span class="cat-icon">💰</span>
+          <div class="cat-name">Finance</div>
+          <div class="cat-count">320 jobs</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="cat-card" onclick="window.location='listings.html'">
+          <span class="cat-icon">🏥</span>
+          <div class="cat-name">Healthcare</div>
+          <div class="cat-count">510 jobs</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="cat-card" onclick="window.location='listings.html'">
+          <span class="cat-icon">📚</span>
+          <div class="cat-name">Education</div>
+          <div class="cat-count">290 jobs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="section-label">Process</div>
+      <h2 class="section-title">How JobNest Works</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="step-num">01</div>
+        <div class="step-title">Create Account</div>
+        <div class="step-desc">Sign up as a candidate or employer in under 2 minutes.</div>
+      </div>
+      <div class="col-md-3">
+        <div class="step-num">02</div>
+        <div class="step-title">Build Profile</div>
+        <div class="step-desc">Add your skills, experience, and upload your resume.</div>
+      </div>
+      <div class="col-md-3">
+        <div class="step-num">03</div>
+        <div class="step-title">Find Jobs</div>
+        <div class="step-desc">Search and filter thousands of job opportunities.</div>
+      </div>
+      <div class="col-md-3">
+        <div class="step-num">04</div>
+        <div class="step-title">Apply & Get Hired</div>
+        <div class="step-desc">Apply with one click and track your applications.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container position-relative">
+    <div class="section-label">Get Started</div>
+    <h2 class="section-title">Ready to Find Your<br/>Next Opportunity?</h2>
+    <p style="color:var(--muted);margin-bottom:2rem;">Join 95,000+ professionals already using JobNest</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="login.html" class="btn btn-accent btn-lg">Start Job Search</a>
+      <a href="employer.html" class="btn btn-outline-accent btn-lg">Post a Job</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="footer-brand">Job<span>Nest</span></div>
+        <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;">Connecting talent with opportunity. Your career journey starts here.</p>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;">For Candidates</div>
+        <a href="listings.html" class="footer-link">Browse Jobs</a>
+        <a href="candidate.html" class="footer-link">Dashboard</a>
+        <a href="apply.html" class="footer-link">Apply Now</a>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;">For Employers</div>
+        <a href="employer.html" class="footer-link">Post a Job</a>
+        <a href="employer.html" class="footer-link">Dashboard</a>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;">Company</div>
+        <a href="#" class="footer-link">About Us</a>
+        <a href="#" class="footer-link">Contact</a>
+        <a href="#" class="footer-link">Privacy Policy</a>
+      </div>
+    </div>
+    <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <span>© 2024 JobNest. All rights reserved.</span>
+      <span>Built with ❤️ for CodSoft Internship</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Shared job data (used across pages)
+const JOBS = [
+  { id:1, title:"Frontend Developer", company:"Google", logo:"🏢", location:"Hyderabad", type:"Full-time", exp:"2-4 yrs", salary:"₹12–18 LPA", category:"Technology", posted:"2 days ago", desc:"Build amazing user interfaces using React and modern web technologies." },
+  { id:2, title:"UI/UX Designer", company:"Microsoft", logo:"🖥️", location:"Remote", type:"Remote", exp:"1-3 yrs", salary:"₹8–14 LPA", category:"Design", posted:"1 day ago", desc:"Design intuitive and beautiful digital experiences for millions of users." },
+  { id:3, title:"Data Scientist", company:"Amazon", logo:"📦", location:"Bangalore", type:"Full-time", exp:"3-5 yrs", salary:"₹20–30 LPA", category:"Technology", posted:"3 days ago", desc:"Analyze large datasets and build ML models to drive business decisions." },
+  { id:4, title:"Product Manager", company:"Flipkart", logo:"🛒", location:"Bangalore", type:"Full-time", exp:"4-6 yrs", salary:"₹25–35 LPA", category:"Management", posted:"5 days ago", desc:"Own product roadmap and drive growth for one of India's top e-commerce platforms." },
+  { id:5, title:"Backend Engineer", company:"Zomato", logo:"🍔", location:"Hyderabad", type:"Full-time", exp:"2-4 yrs", salary:"₹14–22 LPA", category:"Technology", posted:"1 day ago", desc:"Build scalable APIs and microservices powering millions of food orders." },
+  { id:6, title:"Marketing Manager", company:"Swiggy", logo:"🛵", location:"Mumbai", type:"Full-time", exp:"3-5 yrs", salary:"₹10–16 LPA", category:"Marketing", posted:"4 days ago", desc:"Lead digital marketing campaigns and drive user acquisition growth." },
+];
+
+localStorage.setItem('jobs', JSON.stringify(JOBS));
+
+function renderFeaturedJobs() {
+  const container = document.getElementById('featuredJobs');
+  const featured = JOBS.slice(0, 6);
+  container.innerHTML = featured.map(job => `
+    <div class="col-md-6 col-lg-4">
+      <div class="job-card" onclick="window.location='job-detail.html?id=${job.id}'">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="company-logo">${job.logo}</div>
+          <span class="job-posted">${job.posted}</span>
+        </div>
+        <div class="job-title">${job.title}</div>
+        <div class="company-name">${job.company}</div>
+        <div>
+          <span class="job-badge badge-type">${job.type}</span>
+          <span class="job-badge badge-loc"><i class="bi bi-geo-alt"></i> ${job.location}</span>
+          <span class="job-badge badge-exp">${job.exp}</span>
+        </div>
+        <div class="job-salary">${job.salary}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function searchJobs() {
+  const q = document.getElementById('heroSearch').value.trim();
+  window.location = `listings.html${q ? '?q=' + encodeURIComponent(q) : ''}`;
+}
+
+document.getElementById('heroSearch').addEventListener('keypress', e => {
+  if (e.key === 'Enter') searchJobs();
+});
+
+renderFeaturedJobs();
+</script>
+</body>
+</html>
